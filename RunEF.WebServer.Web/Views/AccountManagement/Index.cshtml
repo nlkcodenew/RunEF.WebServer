@@ -1,0 +1,110 @@
+@model IEnumerable<RunEF.WebServer.Domain.Entities.DataRunEFAccountWeb>
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-users-cog me-2"></i>Quản lý tài khoản
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="accountsTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Vai trò</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var account in Model)
+                                {
+                                    <tr data-account-id="@account.Id">
+                                        <td>@account.Id</td>
+                                        <td>
+                                            @account.Username
+                                            @if (account.Username == ViewBag.CurrentUsername)
+                                            {
+                                                <span class="badge bg-primary ms-2">Đang đăng nhập</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge @(account.Role == "Admin" ? "bg-danger" : "bg-secondary")">
+                                                @account.Role
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (account.Username != ViewBag.CurrentUsername)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-warning me-2" 
+                                                        onclick="showChangePasswordModal(@account.Id, '@account.Username')">
+                                                    <i class="fas fa-key"></i> Đổi mật khẩu
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger" 
+                                                        onclick="deleteAccount(@account.Id, '@account.Username')">
+                                                    <i class="fas fa-trash"></i> Xóa
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Không thể thao tác</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal đổi mật khẩu -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <input type="hidden" id="accountId" />
+                    <div class="mb-3">
+                        <label class="form-label">Tên đăng nhập:</label>
+                        <input type="text" class="form-control" id="accountUsername" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Mật khẩu mới:</label>
+                        <input type="password" class="form-control" id="newPassword" 
+                               placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu:</label>
+                        <input type="password" class="form-control" id="confirmPassword" 
+                               placeholder="Nhập lại mật khẩu mới" required />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="changePassword()">Đổi mật khẩu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/account-management.js"></script>
+}

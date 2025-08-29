@@ -58,10 +58,12 @@ D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\lib\boo
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\lib\jquery\dist\jquery.min.js
+D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\js\account-management.js
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\js\site.js
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
 wwwroot\css\site.css
 wwwroot\favicon.ico
+wwwroot\js\account-management.js
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map

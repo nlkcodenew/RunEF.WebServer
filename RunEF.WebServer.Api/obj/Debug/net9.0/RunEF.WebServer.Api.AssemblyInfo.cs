@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RunEF.WebServer.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3ae1f6da5170783480ec49134a3123e3abe3029")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c7e238232fe7d1b87c17209557a0d8089fc45c87")]
 [assembly: System.Reflection.AssemblyProductAttribute("RunEF.WebServer.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RunEF.WebServer.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

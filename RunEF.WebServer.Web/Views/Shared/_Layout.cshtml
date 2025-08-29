@@ -35,13 +35,19 @@
                         </ul>
                         <ul class="navbar-nav">
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="fas fa-user me-1"></i>@User.Identity.Name
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">
-                                        <i class="fas fa-user-plus me-1"></i>Create Account
-                                    </a></li>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Account" asp-action="Register">
+                                            <i class="fas fa-user-plus me-1"></i>Create Account
+                                        </a></li>
+                                        <li><a class="dropdown-item" asp-controller="AccountManagement" asp-action="Index">
+                                            <i class="fas fa-users-cog me-1"></i>Delete Account
+                                        </a></li>
+                                    }
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">
                                         <i class="fas fa-sign-out-alt me-1"></i>Logout

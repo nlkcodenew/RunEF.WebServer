@@ -162,7 +162,6 @@ D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\scopedcss\Views\Shared\_Layout.cshtml.rz.scp.css
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\scopedcss\bundle\RunEF.WebServer.Web.styles.css
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\scopedcss\projectbundle\RunEF.WebServer.Web.bundle.scp.css
-D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\compressed\qsmoygrnbn-b9sayid5wm.gz
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\compressed\dvwikzlhho-61n19gt1b8.gz
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\compressed\zezmge6chz-xtxxf3hu2r.gz
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\compressed\rmpmbxrbcd-bqjiyaj88i.gz
@@ -236,4 +235,6 @@ D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\RunEF.WebServer.Web.pdb
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\RunEF.WebServer.Web.genruntimeconfig.cache
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\ref\RunEF.WebServer.Web.dll
+D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\compressed\qsmoygrnbn-9kfhd3wyg0.gz
+D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\compressed\yklj9ahp86-jsy08qbnck.gz
 D:\Project Jonah\All Project\RunEF.WebServer\RunEF.WebServer.Web\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
