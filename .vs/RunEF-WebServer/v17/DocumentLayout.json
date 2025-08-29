@@ -1,0 +1,67 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{639D482A-6BF1-4E9F-A4D7-82BBADC9876A}|RunEF.WebServer.Web\\RunEF.WebServer.Web.csproj|d:\\project jonah\\all project\\runef.webserver\\runef.webserver.web\\controllers\\api\\clientscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{639D482A-6BF1-4E9F-A4D7-82BBADC9876A}|RunEF.WebServer.Web\\RunEF.WebServer.Web.csproj|solutionrelative:runef.webserver.web\\controllers\\api\\clientscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{639D482A-6BF1-4E9F-A4D7-82BBADC9876A}|RunEF.WebServer.Web\\RunEF.WebServer.Web.csproj|d:\\project jonah\\all project\\runef.webserver\\runef.webserver.web\\controllers\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{639D482A-6BF1-4E9F-A4D7-82BBADC9876A}|RunEF.WebServer.Web\\RunEF.WebServer.Web.csproj|solutionrelative:runef.webserver.web\\controllers\\api\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 541,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{40ea2e6b-2121-4bb8-a43e-c83c04b51041}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ClientsController.cs",
+              "DocumentMoniker": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
+              "RelativeDocumentMoniker": "RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
+              "ToolTip": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
+              "RelativeToolTip": "RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAiwEkAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T03:42:58.475Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
+              "RelativeDocumentMoniker": "RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
+              "ToolTip": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
+              "RelativeToolTip": "RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-29T03:42:49.456Z"
+            }
+          ]
+        },
+        {
+          "DockedWidth": 120,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

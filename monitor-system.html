@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunEF System Monitor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .status.online {
+            background: #28a745;
+        }
+        .status.offline {
+            background: #dc3545;
+        }
+        .status.warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .metric {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .log-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .refresh-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 RunEF System Monitor</h1>
+            <p>Real-time monitoring dashboard for RunEF API Server and Client</p>
+        </div>
+
+        <button class="refresh-btn" onclick="refreshAll()">🔄</button>
+
+        <div class="grid">
+            <div class="card">
+                <h3>📡 API Server Status</h3>
+                <div id="api-status" class="status offline">Checking...</div>
+                <p>Health Check: <span id="api-health">-</span></p>
+                <p>Response Time: <span id="api-response-time">-</span>ms</p>
+                <button class="button" onclick="testApiHealth()">Test Connection</button>
+            </div>
+
+            <div class="card">
+                <h3>🖥️ Database Status</h3>
+                <div id="db-status" class="status offline">Checking...</div>
+                <p>Connection: <span id="db-connection">-</span></p>
+                <p>Last Check: <span id="db-last-check">-</span></p>
+                <button class="button" onclick="testDatabase()">Test Database</button>
+            </div>
+
+            <div class="card">
+                <h3>📊 Activity Logs</h3>
+                <p>Total Logs: <span id="total-logs" class="metric">0</span></p>
+                <p>Today's Logs: <span id="today-logs" class="metric">0</span></p>
+                <p>Last Log: <span id="last-log">-</span></p>
+                <button class="button" onclick="getRecentLogs()">Get Recent Logs</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📝 System Logs</h3>
+            <div id="system-logs" class="log-container">
+                <div>Loading logs...</div>
+            </div>
+            <button class="button" onclick="clearLogs()">Clear Logs</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let refreshInterval;
+
+        async function testApiHealth() {
+            const startTime = Date.now();
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const endTime = Date.now();
+                const responseTime = endTime - startTime;
+                
+                if (response.ok) {
+                    updateApiStatus('online', 'Healthy', responseTime);
+                    const data = await response.json();
+                    updateSystemLogs(`✅ API Health Check: ${JSON.stringify(data)}`);
+                } else {
+                    updateApiStatus('offline', 'Unhealthy', responseTime);
+                    updateSystemLogs(`❌ API Health Check Failed: ${response.status}`);
+                }
+            } catch (error) {
+                updateApiStatus('offline', 'Connection Error', 0);
+                updateSystemLogs(`❌ API Connection Error: ${error.message}`);
+            }
+        }
+
+        function updateApiStatus(status, message, responseTime) {
+            const statusElement = document.getElementById('api-status');
+            const healthElement = document.getElementById('api-health');
+            const responseTimeElement = document.getElementById('api-response-time');
+            
+            statusElement.className = `status ${status}`;
+            statusElement.textContent = message;
+            healthElement.textContent = message;
+            responseTimeElement.textContent = responseTime;
+        }
+
+        async function testDatabase() {
+            try {
+                const response = await fetch(`${API_BASE}/api/ActivityLog/recent?count=1`);
+                if (response.ok) {
+                    updateDatabaseStatus('online', 'Connected', new Date().toLocaleTimeString());
+                    updateSystemLogs('✅ Database Connection: Successful');
+                } else {
+                    updateDatabaseStatus('offline', 'Connection Failed', new Date().toLocaleTimeString());
+                    updateSystemLogs(`❌ Database Connection: Failed - ${response.status}`);
+                }
+            } catch (error) {
+                updateDatabaseStatus('offline', 'Error', new Date().toLocaleTimeString());
+                updateSystemLogs(`❌ Database Error: ${error.message}`);
+            }
+        }
+
+        function updateDatabaseStatus(status, message, lastCheck) {
+            const statusElement = document.getElementById('db-status');
+            const connectionElement = document.getElementById('db-connection');
+            const lastCheckElement = document.getElementById('db-last-check');
+            
+            statusElement.className = `status ${status}`;
+            statusElement.textContent = message;
+            connectionElement.textContent = message;
+            lastCheckElement.textContent = lastCheck;
+        }
+
+
+
+        async function getRecentLogs() {
+            try {
+                const response = await fetch(`${API_BASE}/api/ActivityLog/recent?count=10`);
+                if (response.ok) {
+                    const data = await response.json();
+                    updateActivityLogs(data.data || []);
+                    updateSystemLogs(`📊 Retrieved ${data.data?.length || 0} recent activity logs`);
+                } else {
+                    updateSystemLogs(`❌ Failed to get recent logs: ${response.status}`);
+                }
+            } catch (error) {
+                updateSystemLogs(`❌ Error getting logs: ${error.message}`);
+            }
+        }
+
+        function updateActivityLogs(logs) {
+            document.getElementById('total-logs').textContent = logs.length;
+            const todayLogs = logs.filter(log => {
+                const logDate = new Date(log.timestamp || log.createdAt);
+                const today = new Date();
+                return logDate.toDateString() === today.toDateString();
+            }).length;
+            document.getElementById('today-logs').textContent = todayLogs;
+            
+            if (logs.length > 0) {
+                const lastLog = logs[0];
+                document.getElementById('last-log').textContent = 
+                    `${lastLog.activityType} - ${new Date(lastLog.timestamp || lastLog.createdAt).toLocaleString()}`;
+            }
+        }
+
+        function updateSystemLogs(message) {
+            const logsContainer = document.getElementById('system-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('system-logs').innerHTML = '<div>Logs cleared</div>';
+        }
+
+        function refreshAll() {
+            testApiHealth();
+            testDatabase();
+            getRecentLogs();
+        }
+
+        // Auto-refresh every 30 seconds
+        function startAutoRefresh() {
+            refreshInterval = setInterval(refreshAll, 30000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemLogs('🚀 Dashboard initialized - RunEF System Monitor started');
+            refreshAll();
+            startAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

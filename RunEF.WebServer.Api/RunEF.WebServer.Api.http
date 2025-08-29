@@ -1,0 +1,6 @@
+@RunEF.WebServer.Api_HostAddress = http://localhost:5265
+
+GET {{RunEF.WebServer.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

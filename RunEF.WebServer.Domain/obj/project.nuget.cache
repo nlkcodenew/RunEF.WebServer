@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "gng3hFWd+nU=",
+  "success": true,
+  "projectFilePath": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Domain\\RunEF.WebServer.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ETS1\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

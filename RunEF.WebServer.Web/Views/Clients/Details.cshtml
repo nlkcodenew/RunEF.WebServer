@@ -1,0 +1,345 @@
+@model ClientModel
+@{
+    ViewData["Title"] = "Client Details";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-desktop me-2"></i>Client Details</h2>
+                <p class="text-muted">Detailed information for client @Model.ComputerCode</p>
+            </div>
+            <div>
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i>Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Client ID:</label>
+                            <p class="form-control-plaintext">@Model.Id</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Computer Code:</label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-primary fs-6">@Model.ComputerCode</span>
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">IP Address:</label>
+                            <p class="form-control-plaintext">
+                                <span class="badge bg-info fs-6">@Model.IpAddress</span>
+                            </p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Computer Name:</label>
+                            <p class="form-control-plaintext">@(Model.ComputerName ?? "N/A")</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Username:</label>
+                            <p class="form-control-plaintext">@(Model.Username ?? "N/A")</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Version:</label>
+                            <p class="form-control-plaintext">@(Model.Version ?? "N/A")</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Status:</label>
+                            <p class="form-control-plaintext">@(Model.Status ?? "N/A")</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-heartbeat me-2"></i>Status Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Online Status:</label>
+                    <p class="form-control-plaintext">
+                        @if (Model.IsOnline)
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-circle me-1"></i>Online
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger fs-6">
+                                <i class="fas fa-circle me-1"></i>Offline
+                            </span>
+                        }
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Active Status:</label>
+                    <p class="form-control-plaintext">
+                        @if (Model.IsOnline)
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-check me-1"></i>Active
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary fs-6">
+                                <i class="fas fa-times me-1"></i>Inactive
+                            </span>
+                        }
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Blocked Status:</label>
+                    <p class="form-control-plaintext">
+                        @if (Model.IsBlocked)
+                        {
+                            <span class="badge bg-warning fs-6">
+                                <i class="fas fa-ban me-1"></i>Blocked
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success fs-6">
+                                <i class="fas fa-unlock me-1"></i>Not Blocked
+                            </span>
+                        }
+                    </p>
+                </div>
+                
+                @if (Model.IsBlocked)
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Blocked Reason:</label>
+                        <p class="form-control-plaintext">@(Model.BlockedReason ?? "No reason provided")</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Blocked By:</label>
+                        <p class="form-control-plaintext">@(Model.BlockedBy ?? "Unknown")</p>
+                    </div>
+                    
+                    @if (Model.BlockedAt.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Blocked At:</label>
+                            <p class="form-control-plaintext">
+                                <small>@Model.BlockedAt.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                            </p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock me-2"></i>Timestamps
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Last Heartbeat:</label>
+                    <p class="form-control-plaintext">
+                        @if (Model.LastHeartbeat.HasValue)
+                        {
+                            <small>@Model.LastHeartbeat.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">Never</small>
+                        }
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Last Seen:</label>
+                    <p class="form-control-plaintext">
+                        @if (Model.LastSeen.HasValue)
+                        {
+                            <small>@Model.LastSeen.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">Never</small>
+                        }
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Created At:</label>
+                    <p class="form-control-plaintext">
+                        <small>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                    </p>
+                </div>
+                
+                @if (Model.UpdatedAt.HasValue)
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Updated At:</label>
+                        <p class="form-control-plaintext">
+                            <small>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm:ss")</small>
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-cogs me-2"></i>Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="btn-group" role="group">
+                    @if (Model.IsBlocked)
+                    {
+                        <button class="btn btn-success" onclick="unblockClient(@Model.Id)">
+                            <i class="fas fa-unlock me-1"></i>Unblock Client
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-warning" onclick="blockClient(@Model.Id)">
+                            <i class="fas fa-ban me-1"></i>Block Client
+                        </button>
+                    }
+                    
+                    <button class="btn btn-primary" onclick="updateHeartbeat(@Model.Id)">
+                        <i class="fas fa-heartbeat me-1"></i>Update Heartbeat
+                    </button>
+                    
+                    <button class="btn btn-danger" onclick="deleteClient(@Model.Id)">
+                        <i class="fas fa-trash me-1"></i>Delete Client
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function blockClient(clientId) {
+            if (confirm('Are you sure you want to block this client?')) {
+                fetch(`/Clients/Block/${clientId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Failed to block client');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+        
+        function unblockClient(clientId) {
+            if (confirm('Are you sure you want to unblock this client?')) {
+                fetch(`/Clients/Unblock/${clientId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Failed to unblock client');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+        
+        function updateHeartbeat(clientId) {
+            fetch(`/Clients/UpdateHeartbeat/${clientId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to update heartbeat');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        }
+        
+        function deleteClient(clientId) {
+            if (confirm('Are you sure you want to delete this client? This action cannot be undone.')) {
+                fetch(`/Clients/Delete/${clientId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/Clients';
+                    } else {
+                        alert('Failed to delete client');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+            }
+        }
+    </script>
+}
