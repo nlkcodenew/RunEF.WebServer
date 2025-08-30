@@ -9,7 +9,7 @@ namespace RunEF.WebServer.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize] // Yêu cầu authentication cho tất cả endpoints
 public class ClientsController : ControllerBase
 {
     private readonly IMediator _mediator;

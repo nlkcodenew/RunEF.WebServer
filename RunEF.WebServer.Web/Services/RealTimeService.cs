@@ -10,6 +10,9 @@ namespace RunEF.WebServer.Web.Services
         Task SendClientStatusChange(int clientId, bool isOnline);
         Task SendSystemLog(string message, string level = "Info");
         Task SendDashboardUpdate(DashboardViewModel dashboard);
+        Task SendClientStatusUpdate(int clientId, bool isOnline, bool isBlocked = false);
+        Task SendFactoryStatusUpdate(int clientId, string factory, string status);
+        Task SendCommandResponse(int clientId, string command, string result);
     }
 
     public class RealTimeService : IRealTimeService
@@ -68,6 +71,47 @@ namespace RunEF.WebServer.Web.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending dashboard update");
+            }
+        }
+        
+        public async Task SendClientStatusUpdate(int clientId, bool isOnline, bool isBlocked = false)
+        {
+            try
+            {
+                await _hubContext.Clients.Group("Monitoring").SendAsync("ClientStatusUpdated", clientId, new
+                {
+                    isOnline = isOnline,
+                    isBlocked = isBlocked,
+                    lastUpdated = DateTime.Now
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending client status update for client {ClientId}", clientId);
+            }
+        }
+        
+        public async Task SendFactoryStatusUpdate(int clientId, string factory, string status)
+        {
+            try
+            {
+                await _hubContext.Clients.Group("Monitoring").SendAsync("FactoryStatusUpdated", clientId, factory, status);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending factory status update for client {ClientId}, factory {Factory}", clientId, factory);
+            }
+        }
+        
+        public async Task SendCommandResponse(int clientId, string command, string result)
+        {
+            try
+            {
+                await _hubContext.Clients.Group("Monitoring").SendAsync("CommandResponse", clientId, command, result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error sending command response for client {ClientId}", clientId);
             }
         }
     }

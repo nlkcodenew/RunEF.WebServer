@@ -167,6 +167,56 @@
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm" role="group">
+                                    <!-- Client Control Buttons -->
+                                    <div class="btn-group btn-group-sm me-1" role="group">
+                                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Client Actions">
+                                            <i class="fas fa-cogs"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" onclick="restartClient(@client.Id)">
+                                                <i class="fas fa-redo me-2"></i>Restart Client
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="shutdownClient(@client.Id)">
+                                                <i class="fas fa-power-off me-2"></i>Shutdown Client
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="#" onclick="sendCommand(@client.Id)">
+                                                <i class="fas fa-terminal me-2"></i>Send Command
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Factory Control Buttons -->
+                                    <div class="btn-group btn-group-sm me-1" role="group">
+                                        <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" title="Factory Controls">
+                                            <i class="fas fa-industry"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><h6 class="dropdown-header">Factory B</h6></li>
+                                            <li><a class="dropdown-item" href="#" onclick="controlFactory(@client.Id, 'B', 'start')">
+                                                <i class="fas fa-play me-2 text-success"></i>Start Factory B
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="controlFactory(@client.Id, 'B', 'stop')">
+                                                <i class="fas fa-stop me-2 text-danger"></i>Stop Factory B
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="controlFactory(@client.Id, 'B', 'restart')">
+                                                <i class="fas fa-redo me-2 text-warning"></i>Restart Factory B
+                                            </a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><h6 class="dropdown-header">Factory D</h6></li>
+                                            <li><a class="dropdown-item" href="#" onclick="controlFactory(@client.Id, 'D', 'start')">
+                                                <i class="fas fa-play me-2 text-success"></i>Start Factory D
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="controlFactory(@client.Id, 'D', 'stop')">
+                                                <i class="fas fa-stop me-2 text-danger"></i>Stop Factory D
+                                            </a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="controlFactory(@client.Id, 'D', 'restart')">
+                                                <i class="fas fa-redo me-2 text-warning"></i>Restart Factory D
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Status Control Buttons -->
                                     @if (client.IsBlocked)
                                     {
                                         <button class="btn btn-success" onclick="unblockClient(@client.Id)" title="Unblock">
@@ -387,6 +437,215 @@
                 });
             }
         }
+        
+        // Client Control Functions
+        function restartClient(clientId) {
+            if (confirm('Are you sure you want to restart this client?')) {
+                fetch(`/Clients/Restart/${clientId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Restart command sent successfully', 'success');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Failed to send restart command: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('An error occurred while sending restart command', 'error');
+                });
+            }
+        }
+        
+        function shutdownClient(clientId) {
+            if (confirm('Are you sure you want to shutdown this client? This will turn off the client computer.')) {
+                fetch(`/Clients/Shutdown/${clientId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Shutdown command sent successfully', 'success');
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        showNotification('Failed to send shutdown command: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('An error occurred while sending shutdown command', 'error');
+                });
+            }
+        }
+        
+        function sendCommand(clientId) {
+            const command = prompt('Enter command to send to client:');
+            if (command && command.trim()) {
+                fetch(`/Clients/SendCommand/${clientId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ command: command.trim() })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Command sent successfully', 'success');
+                        if (data.result) {
+                            alert('Command Result:\n' + data.result);
+                        }
+                    } else {
+                        showNotification('Failed to send command: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('An error occurred while sending command', 'error');
+                });
+            }
+        }
+        
+        // Factory Control Functions
+        function controlFactory(clientId, factory, action) {
+            const actionText = action.charAt(0).toUpperCase() + action.slice(1);
+            if (confirm(`Are you sure you want to ${actionText} Factory ${factory} on this client?`)) {
+                fetch(`/Clients/ControlFactory/${clientId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ 
+                        factory: factory, 
+                        action: action 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification(`Factory ${factory} ${actionText} command sent successfully`, 'success');
+                        // Update factory status in real-time if available
+                        if (data.status) {
+                            updateFactoryStatus(clientId, factory, data.status);
+                        }
+                    } else {
+                        showNotification(`Failed to ${actionText} Factory ${factory}: ` + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification(`An error occurred while controlling Factory ${factory}`, 'error');
+                });
+            }
+        }
+        
+        function updateFactoryStatus(clientId, factory, status) {
+            // This function can be used to update factory status indicators in real-time
+            console.log(`Factory ${factory} on client ${clientId} status: ${status}`);
+            // In a real implementation, you might update UI elements to show factory status
+        }
+        
+        // Notification System
+        function showNotification(message, type) {
+            const alertClass = type === 'error' ? 'alert-danger' : 
+                              type === 'success' ? 'alert-success' : 
+                              type === 'info' ? 'alert-info' : 'alert-primary';
+            
+            const notification = $(`
+                <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+            
+            $('body').append(notification);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                notification.alert('close');
+            }, 5000);
+        }
+        
+        // Initialize Clients page with global SignalR manager
+        function initializeClientsPage() {
+            const signalR = window.signalRManager;
+            
+            if (!signalR) {
+                console.error('Global SignalR manager not available');
+                return;
+            }
+
+            console.log('Initializing Clients page with SignalR');
+
+            // Listen for client status updates
+            signalR.on("ClientStatusUpdate", function (clientId, status) {
+                updateClientStatus(clientId, status);
+            });
+
+            // Listen for factory status updates
+            signalR.on("FactoryStatusUpdate", function (clientId, factory, status) {
+                updateFactoryStatus(clientId, factory, status);
+            });
+
+            // Listen for command responses
+            signalR.on("CommandResponse", function (clientId, command, result) {
+                showNotification(`Command response from client ${clientId}: ${result}`, 'info');
+            });
+        }
+        
+        function updateClientStatus(clientId, status) {
+            // Update client status in the table
+            const rows = document.querySelectorAll('#clientsTable tbody tr');
+            rows.forEach(row => {
+                const idCell = row.cells[0];
+                if (idCell.textContent == clientId) {
+                    const statusCell = row.cells[4];
+                    // Update status display based on the new status
+                    if (status.isOnline) {
+                        statusCell.innerHTML = '<span class="badge bg-success"><i class="fas fa-circle me-1"></i>Online</span>';
+                    } else {
+                        statusCell.innerHTML = '<span class="badge bg-danger"><i class="fas fa-circle me-1"></i>Offline</span>';
+                    }
+                    
+                    if (status.isBlocked) {
+                        statusCell.innerHTML += ' <span class="badge bg-warning ms-1"><i class="fas fa-ban me-1"></i>Blocked</span>';
+                    }
+                }
+            });
+        }
+        
+        // Initialize Clients page when page loads
+        $(document).ready(function() {
+            // Wait for global SignalR manager to be ready
+            const waitForSignalR = setInterval(() => {
+                if (window.signalRManager) {
+                    clearInterval(waitForSignalR);
+                    initializeClientsPage();
+                }
+            }, 100);
+            
+            // Fallback: initialize after 3 seconds even if SignalR not ready
+            setTimeout(() => {
+                clearInterval(waitForSignalR);
+                if (window.signalRManager) {
+                    initializeClientsPage();
+                }
+            }, 3000);
+        });
         
         // Auto refresh every 30 seconds
         setInterval(function() {

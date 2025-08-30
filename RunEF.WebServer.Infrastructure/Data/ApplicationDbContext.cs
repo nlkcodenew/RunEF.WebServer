@@ -9,7 +9,7 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<User> Users { get; set; }
+    // public DbSet<User> Users { get; set; } // Tạm thời comment out vì đã có DataRunEFAccountWeb
     public DbSet<RunEFClient> RunEFClients { get; set; }
     public DbSet<ApplicationLog> ApplicationLogs { get; set; }
     public DbSet<DataRunEFAccountWeb> DataRunEFAccountWebs { get; set; }
@@ -18,7 +18,8 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // User entity configuration
+        // User entity configuration - tạm thời comment out
+        /*
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id);
@@ -28,18 +29,18 @@ public class ApplicationDbContext : DbContext
                   .HasDefaultValue("User");
             entity.HasIndex(e => e.Username).IsUnique();
         });
+        */
 
-        // RunEFClient entity configuration
+        // RunEFClient entity configuration - sử dụng Table attribute thay vì cấu hình ở đây
         modelBuilder.Entity<RunEFClient>(entity =>
         {
-            entity.ToTable("RunEFClients");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.ComputerCode).IsRequired().HasMaxLength(100);
             entity.Property(e => e.IpAddress).HasMaxLength(45);
             entity.HasIndex(e => e.ComputerCode).IsUnique();
         });
 
-        // ApplicationLog entity configuration
+        // ApplicationLog entity configuration - sử dụng Table attribute thay vì cấu hình ở đây
         modelBuilder.Entity<ApplicationLog>(entity =>
         {
             entity.HasKey(e => e.Id);

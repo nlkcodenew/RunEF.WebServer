@@ -82,9 +82,36 @@ public class AuthService : IAuthService
 
     public async Task<Result<bool>> LogoutAsync(int userId, CancellationToken cancellationToken = default)
     {
-        // TODO: Implement logout for DataRunEFAccountWeb with int Id
-        // This method needs to be updated to work with DataRunEFAccountWeb entity
-        return Result<bool>.Success(true);
+        try
+        {
+            var user = await _context.DataRunEFAccountWebs
+                .FirstOrDefaultAsync(u => u.Id == userId && !u.IsDeleted, cancellationToken);
+
+            if (user != null)
+            {
+                // Clear refresh token
+                user.RefreshToken = null;
+                user.RefreshTokenExpiryTime = null;
+                await _context.SaveChangesAsync(cancellationToken);
+
+                // Log activity
+                var log = new ApplicationLog(
+                    user.Username,
+                    "Logout",
+                    $"User {user.Username} logged out successfully",
+                    user.IpAddress ?? "Unknown",
+                    user.ComputerCode ?? "Unknown",
+                    "Success");
+
+                await _logRepository.AddAsync(log, cancellationToken);
+            }
+
+            return Result<bool>.Success(true);
+        }
+        catch (Exception ex)
+        {
+            return Result<bool>.Failure($"Logout failed: {ex.Message}");
+        }
     }
 
     public async Task<Result<LoginResponse>> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)

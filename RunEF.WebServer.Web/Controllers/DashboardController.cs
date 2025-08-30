@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using RunEF.WebServer.Web.Models;
 using MediatR;
 using RunEF.WebServer.Application.Queries.Clients;
@@ -21,6 +22,7 @@ public class DashboardController : Controller
         _mapper = mapper;
     }
 
+    [OutputCache(PolicyName = "Dashboard")]
     public async Task<IActionResult> Index()
     {
         try

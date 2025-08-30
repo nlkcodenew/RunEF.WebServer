@@ -1,0 +1,603 @@
+@model UserManagementViewModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-users me-2"></i>User Management</h2>
+        <p class="text-muted">Manage system users, roles, and permissions - <span id="connectionStatus" class="badge bg-secondary">Connecting...</span></p>
+    </div>
+</div>
+
+<!-- User Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="totalUsers">@Model.TotalUsers</h4>
+                        <p class="card-text">Total Users</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="onlineUsers">@Model.OnlineUsers</h4>
+                        <p class="card-text">Online Users</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="lockedUsers">@Model.LockedUsers</h4>
+                        <p class="card-text">Locked Users</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-user-lock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="lastUpdate">@Model.LastUpdated.ToString("HH:mm:ss")</h4>
+                        <p class="card-text">Last Update</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Management Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-cogs me-2"></i>User Actions</h5>
+                <div>
+                    <button class="btn btn-primary me-2" onclick="showCreateUserModal()">
+                        <i class="fas fa-user-plus me-1"></i>Add User
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="refreshUserList()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <input type="text" class="form-control" id="searchUsers" placeholder="Search users..." onkeyup="filterUsers()">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select class="form-select" id="filterRole" onchange="filterUsers()">
+                            <option value="">All Roles</option>
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select class="form-select" id="filterStatus" onchange="filterUsers()">
+                            <option value="">All Status</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                            <option value="locked">Locked</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-list me-2"></i>Users List</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Roles</th>
+                                <th>Status</th>
+                                <th>Lock Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr data-user-id="@user.Id" data-roles="@user.RolesDisplay" data-status="@(user.IsOnline ? "online" : "offline")" data-locked="@(user.IsLocked ? "locked" : "active")">
+                                    <td>
+                                        <strong>@user.UserName</strong>
+                                        <br><small class="text-muted">ID: @user.Id.Substring(0, 8)...</small>
+                                    </td>
+                                    <td>
+                                        @user.Email
+                                        @if (user.EmailConfirmed)
+                                        {
+                                            <i class="fas fa-check-circle text-success ms-1" title="Email Confirmed"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-exclamation-circle text-warning ms-1" title="Email Not Confirmed"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.Roles.Any())
+                                        {
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                <span class="badge bg-secondary me-1">@role</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No roles</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="badge @user.StatusBadge">@user.StatusText</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @user.LockStatusBadge">@user.LockStatusText</span>
+                                        @if (user.IsLocked)
+                                        {
+                                            <br><small class="text-muted">Until: @user.FormattedLockoutEnd</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@user.FormattedLastLogin</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-primary" onclick="editUser('@user.Id')" title="Edit User">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            @if (user.IsLocked)
+                                            {
+                                                <button class="btn btn-sm btn-outline-success" onclick="unlockUser('@user.Id', '@user.UserName')" title="Unlock User">
+                                                    <i class="fas fa-unlock"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-sm btn-outline-warning" onclick="lockUser('@user.Id', '@user.UserName')" title="Lock User">
+                                                    <i class="fas fa-lock"></i>
+                                                </button>
+                                            }
+                                            <button class="btn btn-sm btn-outline-info" onclick="resetPassword('@user.Id', '@user.UserName')" title="Reset Password">
+                                                <i class="fas fa-key"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('@user.Id', '@user.UserName')" title="Delete User">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create User Modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createUserForm">
+                    <div class="mb-3">
+                        <label for="newUserName" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="newUserName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="newUserEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUserPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="newUserPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUserRole" class="form-label">Role</label>
+                        <select class="form-select" id="newUserRole">
+                            <option value="">Select Role (Optional)</option>
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createUser()">Create User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="mb-3">
+                        <label for="editUserEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editUserEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="editEmailConfirmed">
+                            <label class="form-check-label" for="editEmailConfirmed">
+                                Email Confirmed
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="editLockoutEnabled">
+                            <label class="form-check-label" for="editLockoutEnabled">
+                                Lockout Enabled
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Roles</label>
+                        <div id="editUserRoles">
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input role-checkbox" type="checkbox" value="@role" id="role_@role">
+                                    <label class="form-check-label" for="role_@role">
+                                        @role
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateUser()">Update User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        let connection;
+        
+        // Initialize SignalR connection
+        function initializeSignalR() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/monitoringHub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.start().then(function () {
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionStatus').className = 'badge bg-success';
+            }).catch(function (err) {
+                document.getElementById('connectionStatus').textContent = 'Disconnected';
+                document.getElementById('connectionStatus').className = 'badge bg-danger';
+            });
+        }
+        
+        function showCreateUserModal() {
+            document.getElementById('createUserForm').reset();
+            new bootstrap.Modal(document.getElementById('createUserModal')).show();
+        }
+        
+        async function createUser() {
+            const userData = {
+                userName: document.getElementById('newUserName').value,
+                email: document.getElementById('newUserEmail').value,
+                password: document.getElementById('newUserPassword').value,
+                role: document.getElementById('newUserRole').value
+            };
+            
+            try {
+                const response = await fetch('/User/CreateUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('createUserModal')).hide();
+                    showAlert('User created successfully', 'success');
+                    refreshUserList();
+                } else {
+                    showAlert(`Error: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Error creating user: ${error.message}`, 'danger');
+            }
+        }
+        
+        function editUser(userId) {
+            // Find user data from table
+            const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+            if (!row) return;
+            
+            // Populate edit form (simplified - in real app, fetch from server)
+            document.getElementById('editUserId').value = userId;
+            
+            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        }
+        
+        async function updateUser() {
+            const userId = document.getElementById('editUserId').value;
+            const selectedRoles = Array.from(document.querySelectorAll('.role-checkbox:checked')).map(cb => cb.value);
+            
+            const userData = {
+                userId: userId,
+                email: document.getElementById('editUserEmail').value,
+                emailConfirmed: document.getElementById('editEmailConfirmed').checked,
+                lockoutEnabled: document.getElementById('editLockoutEnabled').checked,
+                roles: selectedRoles
+            };
+            
+            try {
+                const response = await fetch('/User/UpdateUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+                    showAlert('User updated successfully', 'success');
+                    refreshUserList();
+                } else {
+                    showAlert(`Error: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Error updating user: ${error.message}`, 'danger');
+            }
+        }
+        
+        async function deleteUser(userId, userName) {
+            if (!confirm(`Are you sure you want to delete user "${userName}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/User/DeleteUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ userId: userId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('User deleted successfully', 'success');
+                    refreshUserList();
+                } else {
+                    showAlert(`Error: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Error deleting user: ${error.message}`, 'danger');
+            }
+        }
+        
+        async function lockUser(userId, userName) {
+            const minutes = prompt(`Lock user "${userName}" for how many minutes? (0 for permanent)`, '60');
+            if (minutes === null) return;
+            
+            try {
+                const response = await fetch('/User/LockUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ userId: userId, lockoutMinutes: parseInt(minutes) })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('User locked successfully', 'success');
+                    refreshUserList();
+                } else {
+                    showAlert(`Error: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Error locking user: ${error.message}`, 'danger');
+            }
+        }
+        
+        async function unlockUser(userId, userName) {
+            if (!confirm(`Are you sure you want to unlock user "${userName}"?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/User/UnlockUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ userId: userId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('User unlocked successfully', 'success');
+                    refreshUserList();
+                } else {
+                    showAlert(`Error: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Error unlocking user: ${error.message}`, 'danger');
+            }
+        }
+        
+        async function resetPassword(userId, userName) {
+            const newPassword = prompt(`Enter new password for user "${userName}":\`);
+            if (!newPassword) return;
+            
+            try {
+                const response = await fetch('/User/ResetPassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ userId: userId, newPassword: newPassword })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Password reset successfully', 'success');
+                } else {
+                    showAlert(`Error: ${result.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Error resetting password: ${error.message}`, 'danger');
+            }
+        }
+        
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
+            const roleFilter = document.getElementById('filterRole').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+            
+            rows.forEach(row => {
+                const userName = row.cells[0].textContent.toLowerCase();
+                const email = row.cells[1].textContent.toLowerCase();
+                const roles = row.getAttribute('data-roles').toLowerCase();
+                const status = row.getAttribute('data-status');
+                const locked = row.getAttribute('data-locked');
+                
+                let show = true;
+                
+                // Text search
+                if (searchTerm && !userName.includes(searchTerm) && !email.includes(searchTerm)) {
+                    show = false;
+                }
+                
+                // Role filter
+                if (roleFilter && !roles.includes(roleFilter.toLowerCase())) {
+                    show = false;
+                }
+                
+                // Status filter
+                if (statusFilter) {
+                    if (statusFilter === 'locked' && locked !== 'locked') {
+                        show = false;
+                    } else if (statusFilter !== 'locked' && status !== statusFilter) {
+                        show = false;
+                    }
+                }
+                
+                row.style.display = show ? '' : 'none';
+            });
+        }
+        
+        function refreshUserList() {
+            location.reload();
+        }
+        
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('.row'));
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        // Auto-refresh user stats every 60 seconds
+        setInterval(() => {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }, 60000);
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSignalR();
+        });
+    </script>
+}

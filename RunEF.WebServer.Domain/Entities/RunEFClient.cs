@@ -1,7 +1,9 @@
 using RunEF.WebServer.Domain.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RunEF.WebServer.Domain.Entities;
 
+[Table("datarunefRunEFClients")]
 public class RunEFClient : BaseEntity
 {
     public required string ComputerCode { get; set; }

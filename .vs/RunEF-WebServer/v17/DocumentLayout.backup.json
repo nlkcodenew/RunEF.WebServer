@@ -32,7 +32,7 @@
               "RelativeDocumentMoniker": "RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
               "ToolTip": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
               "RelativeToolTip": "RunEF.WebServer.Web\\Controllers\\Api\\ClientsController.cs",
-              "ViewState": "AgIAADkAAAAAAAAAAAAiwEkAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-08-29T03:42:58.475Z",
               "EditorCaption": ""
@@ -45,9 +45,10 @@
               "RelativeDocumentMoniker": "RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
               "ToolTip": "D:\\Project Jonah\\All Project\\RunEF.WebServer\\RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
               "RelativeToolTip": "RunEF.WebServer.Web\\Controllers\\Api\\AuthController.cs",
-              "ViewState": "AgIAAFAAAAAAAAAAAAAwwAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-29T03:42:49.456Z"
+              "WhenOpened": "2025-08-29T03:42:49.456Z",
+              "EditorCaption": ""
             }
           ]
         },

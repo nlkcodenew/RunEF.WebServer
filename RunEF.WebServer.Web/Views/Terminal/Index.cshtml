@@ -1,0 +1,323 @@
+@model TerminalViewModel
+@{
+    ViewData["Title"] = "Terminal Management";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-terminal me-2"></i>Terminal Management</h2>
+        <p class="text-muted">Monitor and manage system terminals and processes - <span id="connectionStatus" class="badge bg-secondary">Connecting...</span></p>
+    </div>
+</div>
+
+<!-- System Information Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="activeTerminals">@Model.ActiveTerminals</h4>
+                        <p class="card-text">Active Terminals</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-terminal fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="runningProcesses">@Model.RunningProcesses</h4>
+                        <p class="card-text">Running Processes</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-cogs fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="systemLoad">@Model.SystemLoad</h4>
+                        <p class="card-text">System Load</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title" id="lastUpdate">@Model.LastUpdated.ToString("HH:mm:ss")</h4>
+                        <p class="card-text">Last Update</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terminal Console -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-code me-2"></i>Terminal Console</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-2" onclick="clearConsole()">
+                        <i class="fas fa-trash me-1"></i>Clear
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="refreshSystemInfo()">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text">PS></span>
+                        <input type="text" class="form-control" id="commandInput" placeholder="Enter PowerShell command..." onkeypress="handleCommandInput(event)">
+                        <button class="btn btn-primary" onclick="executeCommand()">
+                            <i class="fas fa-play me-1"></i>Execute
+                        </button>
+                    </div>
+                </div>
+                <div id="consoleOutput" style="height: 400px; overflow-y: auto; background-color: #1e1e1e; color: #ffffff; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 14px;">
+                    <div class="console-line text-success">[$(new Date().toLocaleString())] Terminal console initialized</div>
+                    <div class="console-line text-info">[$(new Date().toLocaleString())] Type commands to execute them on the server</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Running Processes -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5><i class="fas fa-list me-2"></i>Running Processes (Top 20 by Memory)</h5>
+                <button class="btn btn-sm btn-outline-primary" onclick="refreshProcesses()">
+                    <i class="fas fa-sync-alt me-1"></i>Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="processesTable">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Process Name</th>
+                                <th>Memory Usage</th>
+                                <th>CPU Time</th>
+                                <th>Start Time</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var process in Model.Processes)
+                            {
+                                <tr>
+                                    <td>@process.Id</td>
+                                    <td>@process.Name</td>
+                                    <td>@process.FormattedMemoryUsage</td>
+                                    <td>@process.FormattedCpuTime</td>
+                                    <td>@process.FormattedStartTime</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="killProcess(@process.Id, '@process.Name')" title="Kill Process">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script>
+        let connection;
+        
+        // Initialize SignalR connection
+        function initializeSignalR() {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl("/monitoringHub")
+                .withAutomaticReconnect()
+                .build();
+
+            connection.start().then(function () {
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionStatus').className = 'badge bg-success';
+                addConsoleOutput('Connected to real-time monitoring', 'success');
+            }).catch(function (err) {
+                document.getElementById('connectionStatus').textContent = 'Disconnected';
+                document.getElementById('connectionStatus').className = 'badge bg-danger';
+                addConsoleOutput('Failed to connect: ' + err.toString(), 'error');
+            });
+
+            // Listen for terminal information updates
+            connection.on("TerminalInfoUpdated", function (data) {
+                updateSystemInfo(data);
+            });
+        }
+        
+        function handleCommandInput(event) {
+            if (event.key === 'Enter') {
+                executeCommand();
+            }
+        }
+        
+        async function executeCommand() {
+            const commandInput = document.getElementById('commandInput');
+            const command = commandInput.value.trim();
+            
+            if (!command) return;
+            
+            addConsoleOutput(`PS> ${command}`, 'command');
+            commandInput.value = '';
+            
+            try {
+                const response = await fetch('/Terminal/ExecuteCommand', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ command: command })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addConsoleOutput(result.output || 'Command executed successfully', 'output');
+                } else {
+                    addConsoleOutput(`Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addConsoleOutput(`Error executing command: ${error.message}`, 'error');
+            }
+        }
+        
+        function addConsoleOutput(message, type = 'output') {
+            const consoleOutput = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleString();
+            const className = {
+                'command': 'text-warning',
+                'output': 'text-light',
+                'success': 'text-success',
+                'error': 'text-danger'
+            }[type] || 'text-light';
+            
+            const line = document.createElement('div');
+            line.className = `console-line ${className}`;
+            
+            if (type === 'command') {
+                line.textContent = message;
+            } else {
+                line.textContent = `[${timestamp}] ${message}`;
+            }
+            
+            consoleOutput.appendChild(line);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            
+            // Keep only last 100 lines
+            const lines = consoleOutput.querySelectorAll('.console-line');
+            if (lines.length > 100) {
+                lines[0].remove();
+            }
+        }
+        
+        function clearConsole() {
+            document.getElementById('consoleOutput').innerHTML = '';
+            addConsoleOutput('Console cleared', 'success');
+        }
+        
+        async function refreshSystemInfo() {
+            try {
+                const response = await fetch('/Terminal/GetSystemInfo');
+                const data = await response.json();
+                
+                if (data.error) {
+                    addConsoleOutput(`Error refreshing system info: ${data.error}`, 'error');
+                } else {
+                    updateSystemInfo(data);
+                    addConsoleOutput('System information refreshed', 'success');
+                }
+            } catch (error) {
+                addConsoleOutput(`Error refreshing system info: ${error.message}`, 'error');
+            }
+        }
+        
+        function updateSystemInfo(data) {
+            document.getElementById('activeTerminals').textContent = data.activeTerminals || 0;
+            document.getElementById('runningProcesses').textContent = data.runningProcesses || 0;
+            document.getElementById('systemLoad').textContent = data.systemLoad || 'Unknown';
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        }
+        
+        async function killProcess(processId, processName) {
+            if (!confirm(`Are you sure you want to kill process "${processName}" (PID: ${processId})?`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/Terminal/KillProcess', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({ processId: processId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addConsoleOutput(result.message, 'success');
+                    refreshProcesses();
+                } else {
+                    addConsoleOutput(`Error: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                addConsoleOutput(`Error killing process: ${error.message}`, 'error');
+            }
+        }
+        
+        function refreshProcesses() {
+            location.reload();
+        }
+        
+        // Auto-refresh system info every 30 seconds
+        setInterval(refreshSystemInfo, 30000);
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSignalR();
+        });
+    </script>
+}

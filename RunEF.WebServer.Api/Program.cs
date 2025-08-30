@@ -2,9 +2,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using RunEF.WebServer.Application;
 using RunEF.WebServer.Infrastructure;
+using RunEF.WebServer.Api.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure for Windows Service
+builder.Host.UseWindowsService();
+
+// Configure Kestrel to use HTTP only
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5265); // HTTP port
+});
 
 // Add services to the container
 builder.Services.AddControllers();
@@ -34,12 +44,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// CORS
+// CORS Configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowWebApp", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("https://localhost:7001", "http://localhost:5001")
+        var allowedOrigins = builder.Configuration.GetSection("ApiSettings:AllowedOrigins").Get<string[]>();
+        policy.WithOrigins(allowedOrigins ?? new[] { "http://172.19.111.246:5000", "http://172.19.111.246:5265", "*" })
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -55,8 +66,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-app.UseCors("AllowWebApp");
+// Removed HTTPS redirection for Windows Service deployment
+app.UseCors("AllowAll");
+
+// Add custom middleware for client authentication
+app.UseMiddleware<ClientAuthenticationMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

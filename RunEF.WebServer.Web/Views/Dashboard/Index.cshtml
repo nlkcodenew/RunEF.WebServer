@@ -84,19 +84,25 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <a href="@Url.Action("Index", "Clients")" class="btn btn-outline-primary btn-lg w-100">
                             <i class="fas fa-desktop fa-2x d-block mb-2"></i>
                             Manage Clients
                         </a>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
+                        <a href="@Url.Action("Index", "AccountManagement")" class="btn btn-outline-secondary btn-lg w-100">
+                            <i class="fas fa-users fa-2x d-block mb-2"></i>
+                            User Management
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
                         <button class="btn btn-outline-success btn-lg w-100" onclick="refreshData()">
                             <i class="fas fa-sync-alt fa-2x d-block mb-2"></i>
                             Refresh Data
                         </button>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <button class="btn btn-outline-info btn-lg w-100" onclick="toggleLogs()">
                             <i class="fas fa-file-alt fa-2x d-block mb-2"></i>
                             <span id="logsToggleText">Show Logs</span>
@@ -130,6 +136,121 @@
     </div>
 </div>
 
+<!-- Factory Controls Section -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5><i class="fas fa-industry me-2"></i>Factory B Controls</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-success w-100" onclick="sendFactoryCommand('B', 'start')">
+                            <i class="fas fa-play me-1"></i>Start Factory B
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-danger w-100" onclick="sendFactoryCommand('B', 'stop')">
+                            <i class="fas fa-stop me-1"></i>Stop Factory B
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning w-100" onclick="sendFactoryCommand('B', 'restart')">
+                            <i class="fas fa-redo me-1"></i>Restart Factory B
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info w-100" onclick="checkFactoryStatus('B')">
+                            <i class="fas fa-info-circle me-1"></i>Check Status
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">Status: </small>
+                    <span id="factoryBStatus" class="badge bg-secondary">Unknown</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5><i class="fas fa-industry me-2"></i>Factory D Controls</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-success w-100" onclick="sendFactoryCommand('D', 'start')">
+                            <i class="fas fa-play me-1"></i>Start Factory D
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-danger w-100" onclick="sendFactoryCommand('D', 'stop')">
+                            <i class="fas fa-stop me-1"></i>Stop Factory D
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning w-100" onclick="sendFactoryCommand('D', 'restart')">
+                            <i class="fas fa-redo me-1"></i>Restart Factory D
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info w-100" onclick="checkFactoryStatus('D')">
+                            <i class="fas fa-info-circle me-1"></i>Check Status
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <small class="text-muted">Status: </small>
+                    <span id="factoryDStatus" class="badge bg-secondary">Unknown</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terminal Information Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-terminal me-2"></i>Terminal Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h6>Active Terminals</h6>
+                            <span id="activeTerminals" class="badge bg-primary fs-6">0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h6>Running Processes</h6>
+                            <span id="runningProcesses" class="badge bg-success fs-6">0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <h6>System Load</h6>
+                            <span id="systemLoad" class="badge bg-warning fs-6">Low</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-outline-primary" onclick="openTerminalMonitor()">
+                            <i class="fas fa-external-link-alt me-1"></i>Open Terminal Monitor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row" id="logsSection" style="display: none;">
     <div class="col-12">
         <div class="card">
@@ -149,58 +270,56 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script>
-        let connection;
         let logsVisible = false;
         
-        // Initialize SignalR connection
-        function initializeSignalR() {
-            connection = new signalR.HubConnectionBuilder()
-                .withUrl("/monitoringHub")
-                .withAutomaticReconnect()
-                .build();
-
-            // Connection events
-            connection.start().then(function () {
-                document.getElementById('connectionStatus').textContent = 'Connected';
-                document.getElementById('connectionStatus').className = 'badge bg-success';
-                addLog('Connected to real-time monitoring', 'success');
-            }).catch(function (err) {
-                document.getElementById('connectionStatus').textContent = 'Disconnected';
-                document.getElementById('connectionStatus').className = 'badge bg-danger';
-                addLog('Failed to connect: ' + err.toString(), 'error');
-            });
-
-            connection.onreconnecting(function () {
-                document.getElementById('connectionStatus').textContent = 'Reconnecting...';
-                document.getElementById('connectionStatus').className = 'badge bg-warning';
-            });
-
-            connection.onreconnected(function () {
-                document.getElementById('connectionStatus').textContent = 'Connected';
-                document.getElementById('connectionStatus').className = 'badge bg-success';
-                addLog('Reconnected to monitoring', 'success');
-            });
-
-            connection.onclose(function () {
-                document.getElementById('connectionStatus').textContent = 'Disconnected';
-                document.getElementById('connectionStatus').className = 'badge bg-danger';
-            });
-
-            // Listen for dashboard updates
-            connection.on("DashboardUpdated", function (dashboard) {
+        // Initialize Dashboard with global SignalR manager
+        function initializeDashboard() {
+            const signalR = window.signalRManager;
+            
+            // Update connection status based on SignalR state
+            function updateConnectionStatus() {
+                const state = signalR.getConnectionState();
+                const statusElement = document.getElementById('connectionStatus');
+                
+                if (state.isConnected) {
+                    statusElement.textContent = 'Connected';
+                    statusElement.className = 'badge bg-success';
+                } else {
+                    statusElement.textContent = 'Disconnected';
+                    statusElement.className = 'badge bg-danger';
+                }
+            }
+            
+            // Initial status update
+            updateConnectionStatus();
+            
+            // Monitor connection state changes
+            setInterval(updateConnectionStatus, 1000);
+            
+            // Subscribe to SignalR events
+            signalR.on('DashboardUpdate', function (dashboard) {
                 updateDashboard(dashboard);
             });
 
-            // Listen for client status changes
-            connection.on("ClientStatusChanged", function (data) {
+            signalR.on('ClientStatusChange', function (data) {
                 addLog(`Client ${data.ClientId} is now ${data.IsOnline ? 'online' : 'offline'}`, data.IsOnline ? 'success' : 'warning');
             });
 
-            // Listen for system logs
-            connection.on("SystemLog", function (log) {
+            signalR.on('SystemLog', function (log) {
                 addLog(log.Message, log.Level.toLowerCase());
+            });
+            
+            signalR.on('FactoryStatusUpdate', function (data) {
+                updateFactoryStatus(data.Factory, data.Status);
+                addLog(`Factory ${data.Factory} status changed to ${data.Status}`, 'info');
+            });
+            
+            signalR.on('CommandResponse', function (data) {
+                addLog(`Factory ${data.Factory}: ${data.Message}`, data.Success ? 'success' : 'error');
+                if (data.Success) {
+                    setTimeout(() => checkFactoryStatus(data.Factory), 500);
+                }
             });
         }
         
@@ -259,6 +378,74 @@
             addLog('Logs cleared', 'info');
         }
         
+        // Factory Control Functions
+        function sendFactoryCommand(factory, command) {
+            const signalR = window.signalRManager;
+            const state = signalR.getConnectionState();
+            
+            if (state.isConnected) {
+                signalR.invoke('SendFactoryCommand', factory, command)
+                    .then(function() {
+                        addLog(`Factory ${factory} ${command} command sent`, 'info');
+                        // Update status after command
+                        setTimeout(() => checkFactoryStatus(factory), 1000);
+                    })
+                    .catch(function(err) {
+                        addLog(`Failed to send Factory ${factory} ${command}: ${err}`, 'error');
+                    });
+            } else {
+                addLog('Not connected to server', 'error');
+            }
+        }
+        
+        function checkFactoryStatus(factory) {
+            const signalR = window.signalRManager;
+            const state = signalR.getConnectionState();
+            
+            if (state.isConnected) {
+                signalR.invoke('RequestFactoryStatus', factory)
+                    .then(function(status) {
+                        updateFactoryStatus(factory, status);
+                        addLog(`Factory ${factory} status: ${status}`, 'info');
+                    })
+                    .catch(function(err) {
+                        addLog(`Failed to get Factory ${factory} status: ${err}`, 'error');
+                    });
+            } else {
+                addLog('Not connected to server', 'error');
+            }
+        }
+        
+        function updateFactoryStatus(factory, status) {
+            const statusElement = document.getElementById(`factory${factory}Status`);
+            if (statusElement) {
+                statusElement.textContent = status;
+                statusElement.className = 'badge ' + getStatusBadgeClass(status);
+            }
+        }
+        
+        function getStatusBadgeClass(status) {
+            switch(status.toLowerCase()) {
+                case 'running': return 'bg-success';
+                case 'stopped': return 'bg-danger';
+                case 'starting': return 'bg-warning';
+                case 'stopping': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+        
+        // Terminal Functions
+        function openTerminalMonitor() {
+            // Open terminal monitor in new window/tab
+            window.open('/Terminal', '_blank');
+        }
+        
+        function updateTerminalInfo(data) {
+            document.getElementById('activeTerminals').textContent = data.activeTerminals || 0;
+            document.getElementById('runningProcesses').textContent = data.runningProcesses || 0;
+            document.getElementById('systemLoad').textContent = data.systemLoad || 'Low';
+        }
+        
         // Update server time every second
         setInterval(function() {
             document.getElementById('serverTime').textContent = new Date().toLocaleTimeString('en-GB', { hour12: false }).substring(0, 5);
@@ -266,7 +453,27 @@
         
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            initializeSignalR();
+            // Wait for global SignalR manager to be ready
+            const waitForSignalR = setInterval(() => {
+                if (window.signalRManager && window.signalRManager.getConnectionState().isConnected) {
+                    clearInterval(waitForSignalR);
+                    initializeDashboard();
+                    
+                    // Check factory status on load
+                    setTimeout(() => {
+                        checkFactoryStatus('B');
+                        checkFactoryStatus('D');
+                    }, 1000);
+                }
+            }, 100);
+            
+            // Fallback: initialize after 3 seconds even if not connected
+            setTimeout(() => {
+                if (window.signalRManager) {
+                    clearInterval(waitForSignalR);
+                    initializeDashboard();
+                }
+            }, 3000);
         });
     </script>
 }

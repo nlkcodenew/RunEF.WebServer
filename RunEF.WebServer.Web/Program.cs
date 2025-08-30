@@ -31,22 +31,38 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Register DataSeederService
 builder.Services.AddScoped<RunEF.WebServer.Web.Services.DataSeederService>();
 
-// Add SignalR
-builder.Services.AddSignalR();
+// Add SignalR with optimized configuration
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(15);
+    options.MaximumReceiveMessageSize = 32 * 1024; // 32KB
+});
 
 // Register RealTimeService
 builder.Services.AddScoped<IRealTimeService, RealTimeService>();
 
-// Configure HTTP Client
+// Configure HTTP Client with optimizations
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("ApiClient", client =>
 {
     var apiSettings = builder.Configuration.GetSection("ApiSettings");
     client.BaseAddress = new Uri(apiSettings["BaseUrl"]!);
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+{
+    MaxConnectionsPerServer = 10
 });
 
-// Add InMemory cache
-builder.Services.AddMemoryCache();
+// Add InMemory cache with optimized configuration
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1000;
+    options.CompactionPercentage = 0.25;
+    options.ExpirationScanFrequency = TimeSpan.FromMinutes(5);
+});
 
 // Configure Cookie Authentication for Web
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -75,6 +91,25 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
+// Add Response Compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.BrotliCompressionProvider>();
+    options.Providers.Add<Microsoft.AspNetCore.ResponseCompression.GzipCompressionProvider>();
+});
+
+// Add Response Caching
+builder.Services.AddResponseCaching();
+
+// Add Output Caching (for .NET 7+)
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromMinutes(5)));
+    options.AddPolicy("Dashboard", builder => builder.Expire(TimeSpan.FromSeconds(30)));
+    options.AddPolicy("Clients", builder => builder.Expire(TimeSpan.FromMinutes(2)));
+});
+
 // Configure CORS for API access
 builder.Services.AddCors(options =>
 {
@@ -96,7 +131,24 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
+// Add response compression early in pipeline
+app.UseResponseCompression();
+
+// Add response caching
+app.UseResponseCaching();
+
+// Add output caching
+app.UseOutputCache();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static files for 1 day
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=86400");
+    }
+});
 
 app.UseRouting();
 app.UseCors();
